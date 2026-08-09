@@ -1,0 +1,153 @@
+name: Build & Release (public runner)
+
+on:
+  repository_dispatch:
+    types: [build-release]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag to build (ex: v1.0.1)"
+        required: true
+
+env:
+  PRIVATE_REPO: vd99/carnet_de_tir
+  APP_NAME: carnet_de_tir
+  BUNDLE_ID: com.tonpseudo.carnet_de_tir
+
+jobs:
+  resolve-tag:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.resolve.outputs.tag }}
+      version: ${{ steps.resolve.outputs.version }}
+    steps:
+      - id: resolve
+        run: |
+          TAG="${{ github.event.client_payload.tag || github.event.inputs.tag }}"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "version=${TAG#v}" >> "$GITHUB_OUTPUT"
+
+  build-android:
+    needs: resolve-tag
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ env.PRIVATE_REPO }}
+          ref: ${{ needs.resolve-tag.outputs.tag }}
+          token: ${{ secrets.PRIVATE_REPO_TOKEN }}
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.32.0"
+          channel: "stable"
+
+      - name: Restaure keystore
+        run: |
+          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > android/app/upload-keystore.jks
+
+      - name: Create key.properties
+        run: |
+          cat > android/key.properties <<EOF
+          storePassword=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}
+          keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}
+          storeFile=upload-keystore.jks
+          EOF
+
+      - run: flutter pub get
+      - run: flutter build apk --release
+
+      - name: Rename APK
+        run: |
+          mkdir -p out
+          cp build/app/outputs/flutter-apk/app-release.apk out/${{ env.APP_NAME }}-${{ needs.resolve-tag.outputs.version }}.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: android-build
+          path: out/*.apk
+
+  build-ios:
+    needs: resolve-tag
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ env.PRIVATE_REPO }}
+          ref: ${{ needs.resolve-tag.outputs.tag }}
+          token: ${{ secrets.PRIVATE_REPO_TOKEN }}
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.32.0"
+          channel: "stable"
+
+      - run: flutter pub get
+
+      - run: flutter build ios --release --no-codesign
+
+      - name: .ipa package
+        run: |
+          cd build/ios/iphoneos
+          mkdir Payload
+          cp -r Runner.app Payload/
+          zip -r ${{ env.APP_NAME }}.ipa Payload
+
+      - name: Rename the IPA
+        run: |
+          mkdir -p out
+          cp build/ios/iphoneos/${{ env.APP_NAME }}.ipa out/${{ env.APP_NAME }}-${{ needs.resolve-tag.outputs.version }}.ipa
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ios-build
+          path: out/*.ipa
+
+  publish:
+    needs: [resolve-tag, build-android, build-ios]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download builds
+        uses: actions/download-artifact@v4
+        with:
+          path: builds
+
+      - name: Date of the day
+        id: meta
+        run: echo "date=$(date +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
+
+      - name: Release creation
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION="${{ needs.resolve-tag.outputs.version }}"
+          gh release create "v${VERSION}" \
+            "builds/android-build/${{ env.APP_NAME }}-${VERSION}.apk" \
+            "builds/ios-build/${{ env.APP_NAME }}-${VERSION}.ipa" \
+            --title "v${VERSION}" \
+            --notes "Build automatique v${VERSION}"
+
+      - name: source.json update (AltStore)
+        run: |
+          VERSION="${{ needs.resolve-tag.outputs.version }}"
+          REPO="${{ github.repository }}"
+          IPA_URL="https://github.com/${REPO}/releases/download/v${VERSION}/${{ env.APP_NAME }}-${VERSION}.ipa"
+          IPA_SIZE=$(stat -c%s "builds/ios-build/${{ env.APP_NAME }}-${VERSION}.ipa")
+          python3 update_source.py \
+            --version "$VERSION" \
+            --date "${{ steps.meta.outputs.date }}" \
+            --url "$IPA_URL" \
+            --size "$IPA_SIZE"
+
+      - name: Commit & push updated source.json
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add source.json
+          git commit -m "Update source.json to v${{ needs.resolve-tag.outputs.version }}" || echo "Rien à commit"
+          git push
