@@ -12,7 +12,7 @@ on:
 env:
   PRIVATE_REPO: vd99/carnet_de_tir
   APP_NAME: carnet_de_tir
-  BUNDLE_ID: com.tonpseudo.carnet_de_tir
+  BUNDLE_ID: com.vd99.carnet_de_tir
 
 jobs:
   resolve-tag:
@@ -41,7 +41,7 @@ jobs:
         with:
           channel: "stable"
 
-      - name: Restaure keystore
+      - name: Restore keystore
         run: |
           echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > android/app/upload-keystore.jks
 
@@ -55,7 +55,7 @@ jobs:
           EOF
 
       - run: flutter pub get
-      - run: flutter build apk --release
+      - run: flutter build apk --release --build-name=${{ needs.resolve-tag.outputs.version }} --build-number=${{ github.run_number }}
 
       - name: Rename APK
         run: |
@@ -83,7 +83,7 @@ jobs:
 
       - run: flutter pub get
 
-      - run: flutter build ios --release --no-codesign
+      - run: flutter build ios --release --no-codesign --build-name=${{ needs.resolve-tag.outputs.version }} --build-number=${{ github.run_number }}
 
       - name: .ipa package
         run: |
@@ -128,7 +128,7 @@ jobs:
             "builds/android-build/${{ env.APP_NAME }}-${VERSION}.apk" \
             "builds/ios-build/${{ env.APP_NAME }}-${VERSION}.ipa" \
             --title "v${VERSION}" \
-            --notes "Build automatique v${VERSION}"
+            --notes "Build v${VERSION}"
 
       - name: source.json update (AltStore)
         run: |
@@ -147,5 +147,5 @@ jobs:
           git config user.name "github-actions"
           git config user.email "actions@github.com"
           git add source.json
-          git commit -m "Update source.json to v${{ needs.resolve-tag.outputs.version }}" || echo "Rien à commit"
+          git commit -m "Update source.json to v${{ needs.resolve-tag.outputs.version }}" || echo "Nothing to commit"
           git push
