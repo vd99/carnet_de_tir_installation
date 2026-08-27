@@ -1,4 +1,4 @@
-Privacy Policy — Carnet de Tir
+# Privacy Policy — Carnet de Tir
 
 Last updated: 27th August 2026
 
