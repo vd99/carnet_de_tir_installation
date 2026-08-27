@@ -15,13 +15,6 @@
       "size": 20489424,
       "versions": [
         {
-          "version": "1.0.1",
-          "date": "2026-08-27",
-          "downloadURL": "https://github.com/vd99/carnet_de_tir_installation/releases/download/v1.0.1/carnet_de_tir-1.0.1.ipa",
-          "size": 20489424,
-          "localizedDescription": "Auto update"
-        },
-        {
           "version": "1.0.0",
           "date": "2026-08-23",
           "downloadURL": "https://github.com/vd99/carnet_de_tir_installation/releases/download/v1.0.0/carnet_de_tir-1.0.0.ipa",
