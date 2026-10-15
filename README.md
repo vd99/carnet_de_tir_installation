@@ -10,6 +10,8 @@ Cette application est destinée aux pratiquants du tir à l'arbalète Field. Ell
 - Visualiser l'évolution de ses scores ;
 - Accéder facilement à sa licence FFTir.
 
+📖 **[Consulter le manuel utilisateur pour plus de détails](docs/user-manual.md)**
+
 ---
 
 ## Installation
