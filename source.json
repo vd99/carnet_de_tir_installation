@@ -7,13 +7,20 @@
       "name": "Carnet de tir",
       "bundleIdentifier": "com.example.carnetDeTir",
       "developerName": "Vivien DEMEULENAERE",
-      "version": "1.3.0",
+      "version": "1.3.1",
       "versionDate": "2026-10-18",
-      "downloadURL": "https://github.com/vd99/carnet_de_tir_installation/releases/download/v1.3.0/carnet_de_tir-1.3.0.ipa",
+      "downloadURL": "https://github.com/vd99/carnet_de_tir_installation/releases/download/v1.3.1/carnet_de_tir-1.3.1.ipa",
       "localizedDescription": "Application pour l'arbalète field",
       "iconURL": "https://vd99.github.io/carnet_de_tir_installation/icon.png",
-      "size": 21183127,
+      "size": 21078781,
       "versions": [
+        {
+          "version": "1.3.1",
+          "date": "2026-10-18",
+          "downloadURL": "https://github.com/vd99/carnet_de_tir_installation/releases/download/v1.3.1/carnet_de_tir-1.3.1.ipa",
+          "size": 21078781,
+          "localizedDescription": "Auto update"
+        },
         {
           "version": "1.3.0",
           "date": "2026-10-18",
