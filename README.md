@@ -8,6 +8,7 @@ Cette application est destinée aux pratiquants du tir à l'arbalète Field. Ell
 - Consigner ses résultats de matchs passés ;
 - Chronométrer ses tirs ;
 - Visualiser l'évolution de ses scores ;
+- Gérer son calendrier des compétitions ;
 - Accéder facilement à sa licence FFTir.
 
 📖 **[Consulter le manuel utilisateur pour plus de détails](docs/user-manual.md)**

@@ -17,8 +17,9 @@ Ce document explique comment utiliser chaque fonctionnalité. Pour l'installatio
 7. [Chronomètre](#7-chronomètre)
 8. [Statistiques](#8-statistiques)
 9. [Licence FFTir](#9-licence-fftir)
-10. [Paramètres](#10-paramètres)
-11. [Signaler un problème](#11-signaler-un-problème)
+10. [Calendrier et rappels](#10-calendrier-et-rappels)
+11. [Paramètres](#11-paramètres)
+12. [Signaler un problème](#12-signaler-un-problème)
 
 ---
 
@@ -501,7 +502,90 @@ Il est possible d'ajouter une licence par tireur.
 
 ---
 
-## 10. Paramètres
+## 10. Calendrier et rappels
+
+Le calendrier sert à planifier ses prochains matchs, qu'il s'agisse d'une compétition ou d'un entraînement, et à être prévenu par une notification avant la date. Il est accessible depuis le tiroir de navigation.
+
+### Consulter le calendrier
+
+Les jours qui comportent au moins un match sont marqués d'un point. Une petite cloche à côté du point indique qu'au moins un rappel est programmé ce jour-là.
+
+Appuyer sur un jour affiche les matchs correspondants sous le calendrier, avec le même affichage que dans la page **Feuilles de marque**.
+
+<table align="center">
+  <tr>
+    <td align="center"><img src="images/empty-calendar-view.png" alt="Calendrier vide" width="260"><br><sub>Calendrier sans évènement</sub></td>
+    <td align="center"><img src="images/one-event-calendar.png" alt="Calendrier avec un évènement planifié" width="260"><br><sub>Évènement planifié</sub></td>
+  </tr>
+</table>
+
+### Planifier un évènement
+
+Appuyer sur le bouton `+`, puis renseigner :
+
+- le **type de saisie** : **Feuille de marque**, **Résultat** ou **Cible interactive**, selon la façon dont le match sera complété ;
+- le **type de match** et le **tireur** associé ;
+- la **date**, et éventuellement l'**heure de début** ;
+- des **notes**, qui peuvent contenir des étiquettes, par exemple pour signaler une compétition ;
+- les **rappels** souhaités.
+
+Valider crée un match vide à la date choisie. Le jour venu, il suffit de l'ouvrir, depuis le calendrier ou depuis la page **Feuilles de marque**, pour saisir les tirs ou les résultats.
+
+<table align="center">
+  <tr>
+    <td align="center"><img src="images/add-event.png" alt="Formulaire de planification d'un évènement" width="260"><br><sub>Planification d'un évènement</sub></td>
+  </tr>
+</table>
+
+> [!NOTE]
+> Il faut avoir enregistré au moins un tireur pour planifier un évènement.
+
+> [!NOTE]
+> Le match planifié apparaît dans la liste des matchs dès sa création, comme n'importe quel autre match.
+
+### Les rappels
+
+Un rappel est une notification envoyée un certain nombre de jours avant le match : le jour même (**Jour J**), ou **J-1**, **J-2**, **J-3**, **J-7** et **J-14**. Plusieurs rappels peuvent être combinés pour un même match.
+
+La notification indique le type de match, le délai restant, l'heure de début, le lieu et la première ligne des notes.
+
+Les rappels sont envoyés à l'heure définie dans les paramètres. Lorsqu'une heure de début est renseignée, le rappel du jour J est avancé à une heure avant le début du match si l'heure d'envoi serait trop tardive.
+
+> [!IMPORTANT]
+> Sur Android 13 et versions suivantes, ainsi que sur iOS, l'application demande l'autorisation d'envoyer des notifications. Sans cette autorisation, aucun rappel n'est reçu. Elle peut être accordée à tout moment dans les réglages du téléphone.
+
+### Modifier ou supprimer un évènement
+
+Appuyer sur la pastille de rappels située au-dessus d'un match ouvre une feuille qui permet de :
+
+- modifier la **date** et l'**heure** (la croix retire l'heure), le **lieu** et les **notes** ;
+- choisir les **rappels** ;
+- **Supprimer les rappels** : le match est conservé, seules les notifications disparaissent ;
+- **Supprimer le match** : après confirmation, le match et ses rappels sont supprimés.
+
+Les matchs à venir qui n'ont aucun rappel affichent une pastille **Ajouter un rappel**. Les matchs créés avant l'arrivée du calendrier peuvent ainsi, eux aussi, être rappelés.
+
+> [!TIP]
+> Supprimer un match depuis la page **Feuilles de marque** supprime également ses rappels.
+
+### Régler les rappels
+
+Dans la page **Paramètres**, la section **Calendrier** permet d'activer ou de désactiver tous les rappels, de choisir l'heure d'envoi, et de définir les rappels proposés par défaut aux nouveaux évènements.
+
+Modifier ces valeurs n'a pas d'effet sur les évènements déjà créés : chacun conserve ses propres rappels.
+
+<table align="center">
+  <tr>
+    <td align="center"><img src="images/reminders-parameters.png" alt="Paramètres des rappels" width="260"><br><sub>Paramètres des rappels</sub></td>
+  </tr>
+</table>
+
+
+[↑ Retour au sommaire](#sommaire)
+
+---
+
+## 11. Paramètres
 
 ### Thèmes
 
@@ -530,6 +614,6 @@ Les données peuvent également être synchronisées via Dropbox, en s'y connect
 
 ---
 
-## 11. Signaler un problème
+## 12. Signaler un problème
 
 Pour signaler un bug ou proposer une amélioration, ouvrir une *issue* [sur le dépôt GitHub](https://github.com/vd99/carnet_de_tir_installation/issues), en vérifiant au préalable qu'une issue similaire n'existe pas déjà.
