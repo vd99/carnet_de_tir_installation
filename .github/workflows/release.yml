@@ -56,17 +56,34 @@ jobs:
           EOF
 
       - run: flutter pub get
-      - run: flutter build apk --release --build-name=${{ needs.resolve-tag.outputs.version }} --build-number=${{ github.run_number }}
 
-      - name: Rename APK
+      - name: Build APKs (split per ABI)
+        run: |
+          flutter build apk --release \
+            --split-per-abi \
+            --obfuscate \
+            --split-debug-info=build/symbols \
+            --build-name=${{ needs.resolve-tag.outputs.version }} \
+            --build-number=${{ github.run_number }}
+
+      - name: Rename APKs
         run: |
           mkdir -p out
-          cp build/app/outputs/flutter-apk/app-release.apk out/${{ env.APP_NAME }}-${{ needs.resolve-tag.outputs.version }}.apk
+          for abi in arm64-v8a armeabi-v7a x86_64; do
+            cp build/app/outputs/flutter-apk/app-$abi-release.apk \
+               out/${{ env.APP_NAME }}-${{ needs.resolve-tag.outputs.version }}-$abi.apk
+          done
 
       - uses: actions/upload-artifact@v4
         with:
           name: android-build
           path: out/*.apk
+
+      - name: Upload debug symbols (pour flutter symbolize)
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-symbols
+          path: build/symbols
 
   build-ios:
     needs: resolve-tag
@@ -126,7 +143,7 @@ jobs:
         run: |
           VERSION="${{ needs.resolve-tag.outputs.version }}"
           gh release create "v${VERSION}" \
-            "builds/android-build/${{ env.APP_NAME }}-${VERSION}.apk" \
+            builds/android-build/*.apk \
             "builds/ios-build/${{ env.APP_NAME }}-${VERSION}.ipa" \
             --title "v${VERSION}" \
             --notes "Build v${VERSION}"
